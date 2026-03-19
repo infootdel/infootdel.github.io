@@ -1,4 +1,5 @@
 # infootdel.github.io
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -66,16 +67,24 @@
             border-radius: 1.8rem;
             box-shadow: 0 10px 20px rgba(0, 30, 50, 0.1);
             transition: 0.2s;
-            border: 1px solid rgba(130, 190, 230, 0.3);
+            border: 2px solid transparent;
+            cursor: pointer;
         }
         .card:hover {
             transform: translateY(-5px);
             border-color: #4aa3c9;
         }
+        .card.active {
+            border-color: #f4b740;
+            background: #fffbf0;
+        }
         .card h3 {
             font-size: 1.6rem;
             color: #0f4b66;
             margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         .card p {
             color: #1d4e63;
@@ -84,6 +93,21 @@
         .emoji-icon {
             font-size: 2.4rem;
             margin-bottom: 0.5rem;
+        }
+        /* Стили для примеров (скрыты по умолчанию) */
+        .card-example {
+            display: none;
+            background: #e5f3ff;
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            margin-top: 1.2rem;
+            border-left: 4px solid #3b9cbc;
+            font-size: 0.95rem;
+            color: #023047;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.05);
+        }
+        .card.active .card-example {
+            display: block;
         }
         /* Тест */
         .quiz-question {
@@ -239,29 +263,42 @@
         <h1>🔐 Безопасный интернет</h1>
         <div class="subhead">Для школьников и их родителей — просто о важном</div>
 
-        <!-- Информационные карточки -->
+        <!-- Информационные карточки (кликабельные) -->
         <section>
-            <h2>📚 Основные правила</h2>
-            <div class="cards">
+            <h2>📚 Основные правила (нажми на карточку ↓)</h2>
+            <div class="cards" id="rulesCards">
                 <div class="card">
                     <div class="emoji-icon">🔒</div>
                     <h3>Пароли</h3>
                     <p>Используй разные сложные пароли для разных сайтов. Длина — не меньше 8 символов, добавляй цифры и спецзнаки.</p>
+                    <div class="card-example">
+                        ✅ <strong>Пример плохого пароля:</strong> 123456, qwerty, имя ребёнка.<br>
+                        ✅ <strong>Хороший пароль:</strong> G3nR@8!pL (заглавные, строчные, цифры, символ).
+                    </div>
                 </div>
                 <div class="card">
                     <div class="emoji-icon">🎣</div>
                     <h3>Фишинг</h3>
                     <p>Не переходи по подозрительным ссылкам из писем и сообщений. Мошенники маскируются под известные сервисы.</p>
+                    <div class="card-example">
+                        ⚠️ <strong>Пример:</strong> Письмо "Ваш аккаунт заблокирован" со ссылкой vk.com-login.ru — это фишинг. Настоящий адрес — vk.com.
+                    </div>
                 </div>
                 <div class="card">
                     <div class="emoji-icon">📱</div>
                     <h3>Приложения</h3>
                     <p>Скачивай программы только из официальных магазинов (Google Play, App Store). Не открывай файлы от незнакомцев.</p>
+                    <div class="card-example">
+                        📲 <strong>Пример:</strong> Не скачивай «взломанные» игры с форумов — вместо игры может оказаться вирус, который украдет данные.
+                    </div>
                 </div>
                 <div class="card">
                     <div class="emoji-icon">👀</div>
                     <h3>Приватность</h3>
                     <p>Не выкладывай в открытый доступ адрес, телефон, документы. Настрой, кто видит твои посты.</p>
+                    <div class="card-example">
+                        🏠 <strong>Пример:</strong> Фото школьного пропуска или авиабилета в сторис — злоумышленники могут использовать данные. И не ставь геометку дома.
+                    </div>
                 </div>
             </div>
         </section>
@@ -332,6 +369,16 @@
     </div>
 
     <script>
+        // --- Интерактивные карточки (клик для показа примера) ---
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Если кликнули на сам пример, не закрываем (позволяем остаться открытым)
+                if (e.target.closest('.card-example')) return;
+                // Переключаем класс active
+                this.classList.toggle('active');
+            });
+        });
+
         // --- ТЕСТ ---
         function checkQuiz() {
             const answers = {
@@ -384,35 +431,28 @@
             if (/[0-9]/.test(password)) strength++;
             if (/[^a-zA-Z0-9]/.test(password)) strength++;
 
-            // процент заполнения
             const percent = (strength / 5) * 100;
             fill.style.width = percent + '%';
 
-            // цвет и текст
             if (strength <= 2) {
-                fill.style.background = '#f44336'; // красный
+                fill.style.background = '#f44336';
                 text.innerHTML = '🔴 Слабый пароль — легко взломать';
             } else if (strength === 3 || strength === 4) {
-                fill.style.background = '#ffb74d'; // оранжевый
+                fill.style.background = '#ffb74d';
                 text.innerHTML = '🟡 Средний пароль — можно улучшить';
             } else if (strength === 5) {
-                fill.style.background = '#4caf50'; // зеленый
+                fill.style.background = '#4caf50';
                 text.innerHTML = '🟢 Отличный надёжный пароль!';
             }
         }
 
-        // --- ПОКАЗ ПАРОЛЯ (глазик) ---
+        // --- ПОКАЗ ПАРОЛЯ ---
         document.getElementById('togglePassword').addEventListener('click', function () {
             const input = document.getElementById('passwordInput');
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
             this.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
         });
-
-        // запускаем проверку при загрузке (если поле пустое, ничего страшного)
-        window.onload = function() {
-            // добавим небольшой дефолт для наглядности
-        };
     </script>
 </body>
 </html>
